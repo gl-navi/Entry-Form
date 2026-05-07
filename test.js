@@ -59,7 +59,7 @@
 
     window.GLNForm.init({
         formId: 'midcareer-apply',
-        pipedreamEndpoint: 'https://eo1jbij8tb2xgqu.m.pipedream.net',
+        pipedreamEndpoint: 'https://eo2yx6wet8n3rr7.m.pipedream.net',
         submitButtonText: 'エントリー',
         gaEventLabel: 'New Grad Form',
 
