@@ -459,22 +459,6 @@
               </div>
             </div>
 
-            <div class="form-row">
-              <div class="form-group">
-                <label for="entry_eventDate" class="required-label">説明会参加日</label>
-                <input type="date" id="entry_eventDate" name="eventDate" required aria-required="true">
-                <div class="error-message" id="entry_eventDateError"></div>
-              </div>
-              <div class="form-group">
-                    <label for="entry_comment" class="required-label">説明会感想文</label>
-                    <div class="file-input-container">
-                        <label for="entry_comment" class="file-input-label" id="entry_commentfileName">ファイルを選択</label>
-                        <input type="file" id="entry_comment" name="comment" class="file-input" aria-required="false">
-                    </div>
-                    <div class="error-message" id="entry_commentError">感想文をアップロードしてください（PDF、TXT、Word形式、5MB以下）</div>
-              </div>
-            </div>
-
             <div class="checkbox-group">
                 <input type="checkbox" id="entry_privacyPolicy" name="privacyPolicy" class="checkbox-input" required aria-required="true">
                 <label for="entry_privacyPolicy" id="entry_privacyPolicyLabel">
