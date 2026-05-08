@@ -8,7 +8,7 @@
 6．インターン応募用フォーム: <a href="https://gl-navi.github.io/Entry-Form/internship_application.js">intern form content CDN</a>         <br />
 
 
-<br />
-POSSIBLE TODOS:
+
+POSSIBLE TODOS: <br />
 1. All the forms have mostly identical code (~80%). Making one master file for the common code and making specific short "config" file for each form might be better practice.
 2. JSDelivr might be faster and more reliable
