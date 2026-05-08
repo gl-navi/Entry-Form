@@ -269,7 +269,7 @@
                 </div>
                 <div class="form-group">
                     <label for="entry_firstName" class="required-label">名</label>
-                    <input type="text" id="entry_firstName" name="firstName" required aria-required="true" placeholder="太郎">
+                    <input type="text" id="entry_firstName" name="firstName" required aria-required="true" placeholder="太郎/花子">
                     <div class="error-message" id="entry_firstNameError">名を入力してください</div>
                 </div>
             </div>
