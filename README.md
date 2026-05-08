@@ -6,3 +6,7 @@
 4．中途採用-カジュアル面談後: <a href="https://gl-navi.github.io/Entry-Form/midcareer_form_after.js">midcareer_form_after CDN</a>         <br />
 5．ホームページ流入用フォーム: <a href="https://gl-navi.github.io/Entry-Form/HP_form.js">HP_form CDN</a>         <br />
 6．インターン応募用フォーム: <a href="https://gl-navi.github.io/Entry-Form/internship_application.js">intern form content CDN</a>         <br />
+
+
+POSSIBLE TODOS:
+1. All the forms have mostly identical code (~80%). Making one master file for the common code and making specific short "config" file for each form might be better practice.
