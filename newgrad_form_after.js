@@ -206,7 +206,7 @@
     const privacyPolicyTimestampField = shadow.getElementById('entry_privacyPolicyTimestamp');
 
     // FIX #16: explicit string coercion
-    const nextYear = new Date().getFullYear() - 3;
+    const nextYear = new Date().getFullYear() + 1;
     graduationYearInput.placeholder = String(nextYear);
 
     // ============================================================
