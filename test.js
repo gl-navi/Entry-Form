@@ -4,7 +4,7 @@
     // ====================
     // Configuration
     // ====================
-    const PIPEDREAM_URL = 'https://eo2yx6wet8n3rr7.m.pipedream.net';
+    const PIPEDREAM_URL = 'https://sdfds.m.sdfsd.net';
     // TODO: Move this to a non-Pipedream domain (self-hosted, Sentry, etc.)
     // so adblockers can't blind you to the very errors you're trying to debug.
     const ERROR_LOGGER_URL = 'https://eoimhkgidqcxp6a.m.pipedream.net';
