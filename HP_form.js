@@ -369,7 +369,7 @@
     const CVContainer = shadow.getElementById("CVContainer");
 
     // FIX #23: clearer name (was misleadingly called "nextYear")
-    const placeholderGradYear = new Date().getFullYear() - 3;
+    const placeholderGradYear = new Date().getFullYear() + 1;
     gradYear.placeholder = placeholderGradYear;
 
     let applicantType;
