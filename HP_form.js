@@ -323,7 +323,7 @@
                     <div class="error-message" id="entry_resumeError">履歴書をアップロードしてください(PDF、Excel、Word形式、10MB以下)</div>
                 </div>
                 <div class="form-group" id="CVContainer">
-                    <label for="entry_CV" id="entry_CVLabel">職務経歴書</label>
+                    <label for="entry_CV" id="entry_CVLabel">職務経歴書 (中途の方のみ)</label>
                     <div class="file-input-container">
                         <label for="entry_CV" class="file-input-label" id="entry_CVfileName">ファイルを選択</label>
                         <input type="file" id="entry_CV" name="CV" class="file-input">
