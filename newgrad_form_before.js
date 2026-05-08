@@ -221,7 +221,7 @@
         const privacyPolicyTimestampField = shadow.getElementById('entry_privacyPolicyTimestamp');
 
         // Bug #13: renamed misleading "nextYear" — the value is intentionally past
-        const defaultGraduationYear = new Date().getFullYear() - 3;
+        const defaultGraduationYear = new Date().getFullYear() + 1;
         graduationYearInput.placeholder = defaultGraduationYear;
 
         privacyPolicyCheckbox.addEventListener('change', function() {
