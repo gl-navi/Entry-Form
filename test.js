@@ -2,7 +2,7 @@
     'use strict';
 
     // === CONFIG — change PIPEDREAM_URL here to test failures ===
-    const PIPEDREAM_URL = 'https://sdfsd.m.fsdfsdffffffff.net';
+    const PIPEDREAM_URL = 'https://eo1jbij8tb2xgqu.m.pipedream.net';
     const ERROR_LOG_URL = 'https://eoimhkgidqcxp6a.m.pipedream.net';
     const FETCH_TIMEOUT_MS = 20000;
     const FETCH_MAX_RETRIES = 3;
