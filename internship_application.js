@@ -110,6 +110,7 @@
             </div>
             <div class="form-row">
                 <div class="form-group">
+                    <label for="entry_email" class="required-label">Eメール</label>
                     <input type="email" id="entry_email" name="email" required aria-required="true" placeholder="mail@example.com">
                     <div class="error-message" id="entry_emailError">有効なメールアドレスを入力してください</div>
                 </div>
