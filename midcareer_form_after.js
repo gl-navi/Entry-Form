@@ -4,8 +4,8 @@
     // === CONFIG — change PIPEDREAM_URL here to test failures ===
     const PIPEDREAM_URL = 'https://eo1jbij8tb2xgqu.m.pipedream.net';
     const ERROR_LOG_URL = 'https://eoimhkgidqcxp6a.m.pipedream.net';
-    const FETCH_TIMEOUT_MS = 20000;
-    const FETCH_MAX_RETRIES = 3;
+    const FETCH_TIMEOUT_MS = 10000;
+    const FETCH_MAX_RETRIES = 1;
     const MARKETO_MAX_WAIT_MS = 8000;
     const FALLBACK_EMAIL = 'saiyou@gl-navi.co.jp';
     const SUCCESS_REDIRECT_URL = 'https://recruit.gl-navi.co.jp/apply/successful';
