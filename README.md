@@ -1,6 +1,6 @@
 # ASSET (HTML,CSS,JS) FOR RECRUIT-FORM
-DO NOT MAKE THIS REPOSITORY PRIVATE. The assets are retrieved from company homepage as public asset.
-こちらのレポジトリを非公開にしないでください。 会社ホームページから公開アセットとしてロードしています。
+DO NOT MAKE THIS REPOSITORY PRIVATE. The assets are retrieved from company homepage as public assets.
+こちらのレポジトリを非公開にしないでください。 会社ホームページのフロントエンドから公開アセットとしてロードしています。
 
 ### GL Navi HomePage採用フォーム: <br />
 1．新卒採用-説明会前: <a href="https://gl-navi.github.io/Entry-Form/newgrad_form_before.js">newgrad_form_before CDN</a>          <br />
