@@ -1,5 +1,5 @@
 # ASSET (HTML,CSS,JS) FOR RECRUIT-FORM
-DO NOT MAKE THIS REPOSITORY PRIVATE. These assets are retrieved from company homepage as public asset.
+DO NOT MAKE THIS REPOSITORY PRIVATE. The assets are retrieved from company homepage as public asset.
 こちらのレポジトリを非公開にしないでください。 会社ホームページから公開アセットとしてロードしています。
 
 ### GL Navi HomePage採用フォーム: <br />
