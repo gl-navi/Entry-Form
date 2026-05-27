@@ -21,5 +21,5 @@ DO NOT MAKE THIS REPOSITORY PRIVATE. The assets are retrieved from company homep
 
 
 POSSIBLE TODOS:
-1. All the forms have mostly identical code (~80%). Making one master file for the common code and making short "config" file for each form might be better practice.
-2. JSDelivr might be faster and more reliable
+1. All the forms have mostly identical code (~80%). Making one master file for the common code and making short "config" file for each form might be a better practice.
+2. Github Page is used to host the assets but JSDelivr might be faster and more reliable
