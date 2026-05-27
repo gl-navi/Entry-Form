@@ -3,7 +3,7 @@ DO NOT MAKE THIS REPOSITORY PRIVATE. The assets are retrieved from company homep
 こちらのレポジトリを非公開にしないでください。 会社ホームページのフロントエンドから公開アセットとしてロードしています。
 
 ### GL Navi HomePage採用フォーム: <br />
-1．新卒採用-説明会前: <a href="https://gl-navi.github.io/Entry-Form/newgrad_form_before.js">newgrad_form_before CDN</a>          <br />
+1．新卒採用-説明会前: <a href="https://gl-navi.github.io/Entry-Form/newgrad_form_before.js" target="_blank">newgrad_form_before CDN</a>          <br />
    → <a href="https://recruit.gl-navi.co.jp/newgrad/register">Newgrad form for 説明会</a> is loading this asset publicly.         <br />
 2．新卒採用-説明会後: <a href="https://gl-navi.github.io/Entry-Form/newgrad_form_after.js">newgrad_form_after CDN</a>            <br />
    → <a href="https://recruit.gl-navi.co.jp/newgrad/entry">Newgrad form for 本選考エントリー</a> is loading this asset publicly.         <br />
