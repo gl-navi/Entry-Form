@@ -1,0 +1,1139 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>リンク生成ツール (中途採用のエントリーのみ)</title>
+
+  <style>
+    :root {
+      --sf-blue: #0176d3;
+      --sf-blue-dark: #014486;
+      --sf-blue-deep: #032d60;
+      --sf-bg: #f3f3f3;
+      --sf-card: #ffffff;
+      --sf-border: #d8dde6;
+      --sf-text: #181818;
+      --sf-muted: #706e6b;
+      --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--sf-bg);
+      color: var(--sf-text);
+      font-family: "Salesforce Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.4;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: #fff;
+      border-bottom: 1px solid var(--sf-border);
+      box-shadow: var(--shadow);
+    }
+
+    .container,
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .topbar .container {
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    main {
+      padding-top: 16px;
+      padding-bottom: 36px;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.86rem;
+      color: var(--sf-muted);
+    }
+
+    .meta-label,
+    .row-label {
+      font-weight: 700;
+      color: var(--sf-blue-deep);
+      white-space: nowrap;
+    }
+
+    code {
+      background: #eef4ff;
+      border: 1px solid #d0e3ff;
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.92em;
+      color: var(--sf-blue-deep);
+      word-break: break-all;
+    }
+
+    .generated-block {
+      margin-top: 8px;
+    }
+
+    .generated-head {
+      margin-bottom: 5px;
+    }
+
+    .generated-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      border: 1px solid var(--sf-border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font: inherit;
+      color: var(--sf-text);
+      background: #fff;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--sf-blue);
+      box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.15);
+    }
+
+    #generatedUrl {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.92rem;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 11px;
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      transition: 0.15s ease-in-out;
+    }
+
+    .btn-primary {
+      background: var(--sf-blue);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--sf-blue-dark);
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--sf-blue-deep);
+      border: 1px solid var(--sf-border);
+    }
+
+    .btn-secondary:hover {
+      background: #f8fbff;
+      border-color: #aacbff;
+    }
+
+    .params-row {
+      margin-top: 9px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 10px;
+    }
+
+    .field-box {
+      position: relative;
+    }
+
+    .field-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+
+    .field-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--sf-blue-deep);
+    }
+
+    .field-help {
+      font-size: 0.76rem;
+      color: var(--sf-muted);
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .suggestion-panel {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      z-index: 40;
+      background: #fff;
+      border: 1px solid var(--sf-border);
+      border-radius: 10px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+      max-height: 260px;
+      overflow: auto;
+    }
+
+    .suggestion-panel[hidden] {
+      display: none;
+    }
+
+    .suggestion-option {
+      width: 100%;
+      border: none;
+      background: #fff;
+      padding: 9px 11px;
+      text-align: left;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      cursor: pointer;
+      border-bottom: 1px solid #eef1f6;
+    }
+
+    .suggestion-option:last-child {
+      border-bottom: none;
+    }
+
+    .suggestion-option:hover {
+      background: #f4f8ff;
+    }
+
+    .suggestion-main {
+      color: var(--sf-blue-deep);
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .suggestion-sub {
+      color: var(--sf-muted);
+      font-size: 0.8rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: nowrap;
+    }
+
+    .suggestion-empty {
+      padding: 9px 11px;
+      color: var(--sf-muted);
+      font-size: 0.88rem;
+    }
+
+    .selection-row {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .selection-row:empty {
+      display: none;
+    }
+
+    .selection-chip,
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #eef4ff;
+      color: var(--sf-blue-deep);
+      border: 1px solid #d0e3ff;
+      font-size: 0.79rem;
+      font-weight: 700;
+    }
+
+    .section {
+      margin-top: 6px;
+    }
+
+    .section-title {
+      margin: 0 0 6px;
+      font-size: 1.15rem;
+      color: var(--sf-blue-deep);
+    }
+
+    .section-subtitle {
+      margin: 0 0 12px;
+      color: var(--sf-muted);
+      font-size: 0.9rem;
+    }
+
+    .link-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .link-card {
+      background: var(--sf-card);
+      border: 1px solid var(--sf-border);
+      border-left: 4px solid var(--sf-blue);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .link-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .link-card-title {
+      margin: 0 0 8px;
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: var(--sf-blue-deep);
+    }
+
+    .link-badges,
+    .small-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .url-box {
+      margin-top: 10px;
+      background: #f8f9fb;
+      border: 1px solid var(--sf-border);
+      border-radius: 8px;
+      padding: 9px 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.88rem;
+      word-break: break-all;
+    }
+
+    @media (max-width: 760px) {
+      .generated-row {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      #generatedUrl {
+        grid-column: 1 / -1;
+      }
+
+      .link-card-header {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="generatorPanel" class="topbar">
+    <div class="container">
+      <h1 class="sr-only">リンク生成ツール</h1>
+
+      <div class="meta-row">
+        <span class="meta-label">ベースURL</span>
+        <code id="baseUrlText"></code>
+      </div>
+
+      <div class="generated-block">
+        <div class="generated-head">
+          <span class="row-label">生成リンク</span>
+        </div>
+
+        <div class="generated-row">
+          <input id="generatedUrl" type="text" readonly spellcheck="false" />
+          <button id="copyGeneratedBtn" class="btn btn-primary" type="button">コピー</button>
+          <a id="openGeneratedLink" class="btn btn-secondary" href="#" target="_blank" rel="noopener noreferrer">開く</a>
+          <button id="resetBtn" class="btn btn-secondary" type="button">リセット</button>
+        </div>
+      </div>
+
+      <div id="paramFields" class="params-row"></div>
+
+      <div id="selectedSummary" class="selection-row" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <main id="pageContent">
+    <section class="section">
+      <h2 class="section-title">よく使う固定リンク</h2>
+      <p class="section-subtitle">
+        下の一覧は <code>FREQUENT_LINKS</code> に定義した固定リンクです。
+      </p>
+      <div id="frequentLinks" class="link-list"></div>
+    </section>
+  </main>
+
+  <script>
+    // =========================================================
+    // 1) ベースURL
+    // =========================================================
+    const BASE_URL = "https://recruit.gl-navi.co.jp/mid-career/entry";
+
+    // =========================================================
+    // 2) パラメータ定義
+    //    suggestions は { label, value } 形式
+    //    label = 画面上の表示名
+    //    value = 実際にURLへ入る値
+    // =========================================================
+    const PARAMS_CONFIG = [
+      {
+        key: "source",
+        label: "集客元（source）",
+        placeholder: "入力して検索 / クリックして選択",
+        help: "媒体がSalesforceの集客元に入ります。",
+        suggestions: [
+          { label: "Indeed", value: "indeed" },
+          { label: "リクナビHRTech", value: "rikunavihrtech" },
+          { label: "RCC", value: "rcc" },
+          { label: "パソナ", value: "pasona" },
+          { label: "Green", value: "green" },
+          { label: "日経転職版", value: "nikkei" },
+          { label: "ホームページ", value: "hp" },
+          { label: "みらいワークス", value: "miraiworks" },
+          { label: "type", value: "type" },
+          { label: "その他", value: "other" }
+        ],
+        defaultValue: ""
+      },
+      {
+        key: "rt",
+        label: "レコードタイプ（rt）",
+        placeholder: "入力して検索 / クリックして選択",
+        help: "Salesforceのレコードタイプになります。",
+        suggestions: [
+          { label: "中途本社", value: "hq" },
+          { label: "中途コンサル", value: "consultant" },
+          { label: "JapanWing", value: "jw" }
+        ],
+        defaultValue: ""
+      }
+    ];
+
+    // =========================================================
+    // 3) 固定リンク
+    //    params には実際にURLへ入る value を指定
+    // =========================================================
+    const FREQUENT_LINKS = [
+      { label: "Indeed / 中途本社", params: { source: "indeed", rt: "consultant" } },
+      { label: "リクナビHRTech / 中途本社", params: { source: "rikunavihrtech", rt: "consultant" } },
+      { label: "Green / 中途コンサル", params: { source: "green", rt: "consultant" } },
+      { label: "ホームページ / JapanWing", params: { source: "hp", rt: "jw" } },
+      { label: "その他 / 中途本社", params: { source: "other", rt: "hq" } }
+
+      // 追加例:
+      // ,
+      // { label: "パソナ / 中途本社", params: { source: "pasona", rt: "hq" } }
+    ];
+
+    const paramFieldsEl = document.getElementById("paramFields");
+    const generatedUrlEl = document.getElementById("generatedUrl");
+    const selectedSummaryEl = document.getElementById("selectedSummary");
+    const baseUrlTextEl = document.getElementById("baseUrlText");
+    const openGeneratedLinkEl = document.getElementById("openGeneratedLink");
+    const copyGeneratedBtnEl = document.getElementById("copyGeneratedBtn");
+    const resetBtnEl = document.getElementById("resetBtn");
+    const frequentLinksEl = document.getElementById("frequentLinks");
+    const generatorPanelEl = document.getElementById("generatorPanel");
+    const pageContentEl = document.getElementById("pageContent");
+
+    function escapeHtml(value) {
+      const map = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      };
+
+      return String(value).replace(/[&<>"']/g, function (match) {
+        return map[match];
+      });
+    }
+
+    function normalizeSuggestions(rawSuggestions = []) {
+      const list = Array.isArray(rawSuggestions) ? rawSuggestions : [];
+
+      return list
+        .map((item) => {
+          if (typeof item === "string") {
+            const text = String(item).trim();
+            if (!text) return null;
+            return { label: text, value: text };
+          }
+
+          if (!item || typeof item !== "object") {
+            return null;
+          }
+
+          const label = String(item.label ?? item.value ?? "").trim();
+          const value = String(item.value ?? item.label ?? "").trim();
+
+          if (!label && !value) return null;
+
+          return {
+            label: label || value,
+            value: value || label
+          };
+        })
+        .filter(Boolean);
+    }
+
+    function getParamConfigByKey(key) {
+      return PARAMS_CONFIG.find((param) => param.key === key) || null;
+    }
+
+    function getSuggestionsForKey(key) {
+      const param = getParamConfigByKey(key);
+      return normalizeSuggestions(param?.suggestions || []);
+    }
+
+    function findSuggestionByValue(key, actualValue) {
+      const value = String(actualValue ?? "").trim();
+      if (!value) return null;
+
+      return getSuggestionsForKey(key).find((item) => item.value === value) || null;
+    }
+
+    function findExactSuggestionMatch(key, rawText) {
+      const text = String(rawText ?? "").trim().toLowerCase();
+      if (!text) return null;
+
+      return (
+        getSuggestionsForKey(key).find((item) => {
+          return (
+            item.label.toLowerCase() === text ||
+            item.value.toLowerCase() === text
+          );
+        }) || null
+      );
+    }
+
+    function filterSuggestions(key, rawText) {
+      const text = String(rawText ?? "").trim().toLowerCase();
+      const suggestions = getSuggestionsForKey(key);
+
+      if (!text) return suggestions;
+
+      return suggestions.filter((item) => {
+        return (
+          item.label.toLowerCase().includes(text) ||
+          item.value.toLowerCase().includes(text)
+        );
+      });
+    }
+
+    function buildUrl(params = {}) {
+      const url = new URL(BASE_URL);
+
+      PARAMS_CONFIG.forEach((param) => {
+        url.searchParams.delete(param.key);
+      });
+
+      for (const [key, rawValue] of Object.entries(params)) {
+        const value = String(rawValue ?? "").trim();
+        if (value) {
+          url.searchParams.set(key, value);
+        }
+      }
+
+      return url.toString();
+    }
+
+    function buildCompactParamText(key, actualValue) {
+      const value = String(actualValue ?? "").trim();
+      if (!value) return "";
+
+      const matched = findSuggestionByValue(key, value);
+
+      if (matched && matched.label !== value) {
+        return `${key}: ${matched.label} (${value})`;
+      }
+
+      return `${key}: ${value}`;
+    }
+
+    function resolveFrequentLink(item) {
+      if (item.url) return item.url;
+      return buildUrl(item.params || {});
+    }
+
+    function getDisplayInput(key) {
+      return document.querySelector(`[data-param-display-key="${key}"]`);
+    }
+
+    function getValueInput(key) {
+      return document.querySelector(`[data-param-key="${key}"]`);
+    }
+
+    function getSuggestionPanel(key) {
+      return document.querySelector(`[data-suggestion-list="${key}"]`);
+    }
+
+    function getFieldBox(key) {
+      return document.querySelector(`[data-field-key="${key}"]`);
+    }
+
+    function clearFieldSelection(key, keepDisplayText = false) {
+      const displayInput = getDisplayInput(key);
+      const valueInput = getValueInput(key);
+
+      if (!displayInput || !valueInput) return;
+
+      if (!keepDisplayText) {
+        displayInput.value = "";
+      }
+
+      valueInput.value = "";
+      delete displayInput.dataset.selectedLabel;
+      delete displayInput.dataset.selectedValue;
+      delete displayInput.dataset.selectionMode;
+    }
+
+    function setFieldValue(key, actualValue) {
+      const displayInput = getDisplayInput(key);
+      const valueInput = getValueInput(key);
+
+      if (!displayInput || !valueInput) return;
+
+      const value = String(actualValue ?? "").trim();
+
+      if (!value) {
+        clearFieldSelection(key);
+        return;
+      }
+
+      const matched = findSuggestionByValue(key, value);
+
+      if (matched) {
+        displayInput.value = matched.label;
+        valueInput.value = matched.value;
+        displayInput.dataset.selectedLabel = matched.label;
+        displayInput.dataset.selectedValue = matched.value;
+        displayInput.dataset.selectionMode = "suggestion";
+        return;
+      }
+
+      displayInput.value = value;
+      valueInput.value = value;
+      displayInput.dataset.selectedLabel = value;
+      displayInput.dataset.selectedValue = value;
+      displayInput.dataset.selectionMode = "free";
+    }
+
+    function closeSuggestionPanel(key) {
+      const panel = getSuggestionPanel(key);
+      const input = getDisplayInput(key);
+
+      if (panel) {
+        panel.hidden = true;
+      }
+
+      if (input) {
+        input.setAttribute("aria-expanded", "false");
+      }
+    }
+
+    function closeAllSuggestionPanels(exceptKey = null) {
+      PARAMS_CONFIG.forEach((param) => {
+        if (param.key !== exceptKey) {
+          closeSuggestionPanel(param.key);
+        }
+      });
+    }
+
+    function renderSuggestionPanel(key, rawText = "") {
+      const panel = getSuggestionPanel(key);
+      if (!panel) return;
+
+      const allSuggestions = getSuggestionsForKey(key);
+      if (!allSuggestions.length) {
+        panel.hidden = true;
+        return;
+      }
+
+      const suggestions = filterSuggestions(key, rawText);
+
+      if (!suggestions.length) {
+        panel.innerHTML = `<div class="suggestion-empty">一致する候補がありません</div>`;
+      } else {
+        panel.innerHTML = suggestions
+          .map((item) => {
+            return `
+              <button
+                type="button"
+                class="suggestion-option"
+                data-action="choose-suggestion"
+                data-key="${escapeHtml(key)}"
+                data-label="${escapeHtml(item.label)}"
+                data-value="${escapeHtml(item.value)}"
+                title="URLに入る値: ${escapeHtml(item.value)}"
+              >
+                <span class="suggestion-main">${escapeHtml(item.label)}</span>
+                <span class="suggestion-sub">${escapeHtml(item.value)}</span>
+              </button>
+            `;
+          })
+          .join("");
+      }
+
+      panel.hidden = false;
+    }
+
+    function openSuggestionPanel(key, rawText = "") {
+      if (!getSuggestionsForKey(key).length) return;
+
+      closeAllSuggestionPanels(key);
+      renderSuggestionPanel(key, rawText);
+
+      const input = getDisplayInput(key);
+      if (input) {
+        input.setAttribute("aria-expanded", "true");
+      }
+    }
+
+    function selectSuggestion(key, suggestion) {
+      const displayInput = getDisplayInput(key);
+      const valueInput = getValueInput(key);
+
+      if (!displayInput || !valueInput) return;
+
+      displayInput.value = suggestion.label;
+      valueInput.value = suggestion.value;
+      displayInput.dataset.selectedLabel = suggestion.label;
+      displayInput.dataset.selectedValue = suggestion.value;
+      displayInput.dataset.selectionMode = "suggestion";
+
+      closeSuggestionPanel(key);
+      updateGeneratedUrl();
+    }
+
+    function commitDisplayInput(key) {
+      const displayInput = getDisplayInput(key);
+      const valueInput = getValueInput(key);
+
+      if (!displayInput || !valueInput) return;
+
+      const text = String(displayInput.value ?? "").trim();
+
+      if (!text) {
+        clearFieldSelection(key);
+        closeSuggestionPanel(key);
+        updateGeneratedUrl();
+        return;
+      }
+
+      const exactMatch = findExactSuggestionMatch(key, text);
+
+      if (exactMatch) {
+        selectSuggestion(key, exactMatch);
+        return;
+      }
+
+      displayInput.value = text;
+      valueInput.value = text;
+      displayInput.dataset.selectedLabel = text;
+      displayInput.dataset.selectedValue = text;
+      displayInput.dataset.selectionMode = "free";
+
+      closeSuggestionPanel(key);
+      updateGeneratedUrl();
+    }
+
+    function commitAllDisplayInputs() {
+      PARAMS_CONFIG.forEach((param) => {
+        commitDisplayInput(param.key);
+      });
+    }
+
+    function renderParamFields() {
+      const html = PARAMS_CONFIG.map((param, index) => {
+        const inputId = `param-display-${param.key}`;
+
+        return `
+          <div class="field-box" data-field-key="${escapeHtml(param.key)}">
+            <div class="field-top">
+              <label class="field-label" for="${escapeHtml(inputId)}">${escapeHtml(param.label)}</label>
+              ${param.help ? `<div class="field-help">${escapeHtml(param.help)}</div>` : ""}
+            </div>
+
+            <div class="search-wrap">
+              <input
+                id="${escapeHtml(inputId)}"
+                type="text"
+                data-param-display-key="${escapeHtml(param.key)}"
+                placeholder="${escapeHtml(param.placeholder || "")}"
+                spellcheck="false"
+                autocomplete="off"
+                aria-expanded="false"
+                ${index === 0 ? "autofocus" : ""}
+              />
+              <input type="hidden" data-param-key="${escapeHtml(param.key)}" />
+              <div class="suggestion-panel" data-suggestion-list="${escapeHtml(param.key)}" hidden></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      paramFieldsEl.innerHTML = html;
+
+      PARAMS_CONFIG.forEach((param) => {
+        setFieldValue(param.key, param.defaultValue || "");
+      });
+    }
+
+    function getCurrentParams() {
+      const params = {};
+
+      PARAMS_CONFIG.forEach((param) => {
+        const input = getValueInput(param.key);
+        params[param.key] = input ? input.value : "";
+      });
+
+      return params;
+    }
+
+    function renderSelectedSummary(params) {
+      const entries = Object.entries(params).filter(([, rawValue]) => {
+        return String(rawValue ?? "").trim() !== "";
+      });
+
+      if (!entries.length) {
+        selectedSummaryEl.innerHTML = "";
+        return;
+      }
+
+      selectedSummaryEl.innerHTML = entries
+        .map(([key, value]) => {
+          return `<span class="selection-chip">${escapeHtml(buildCompactParamText(key, value))}</span>`;
+        })
+        .join("");
+    }
+
+    function updateGeneratedUrl() {
+      const params = getCurrentParams();
+      const currentUrl = buildUrl(params);
+
+      generatedUrlEl.value = currentUrl;
+      openGeneratedLinkEl.href = currentUrl;
+      renderSelectedSummary(params);
+
+      requestAnimationFrame(updatePageOffset);
+    }
+
+    function resetForm() {
+      PARAMS_CONFIG.forEach((param) => {
+        setFieldValue(param.key, param.defaultValue || "");
+        closeSuggestionPanel(param.key);
+      });
+
+      updateGeneratedUrl();
+    }
+
+    function applyParamsToForm(params = {}) {
+      PARAMS_CONFIG.forEach((param) => {
+        const value = params[param.key] ?? param.defaultValue ?? "";
+        setFieldValue(param.key, value);
+        closeSuggestionPanel(param.key);
+      });
+
+      updateGeneratedUrl();
+    }
+
+    function renderFrequentLinks() {
+      const html = FREQUENT_LINKS.map((item, index) => {
+        const url = resolveFrequentLink(item);
+
+        const badges = item.params
+          ? Object.entries(item.params)
+              .filter(([, rawValue]) => String(rawValue ?? "").trim() !== "")
+              .map(([key, value]) => {
+                return `<span class="badge">${escapeHtml(buildCompactParamText(key, value))}</span>`;
+              })
+              .join("")
+          : `<span class="badge">URL直指定</span>`;
+
+        return `
+          <article class="link-card">
+            <div class="link-card-header">
+              <div>
+                <div class="link-card-title">${escapeHtml(item.label)}</div>
+                <div class="link-badges">${badges}</div>
+              </div>
+
+              <div class="small-actions">
+                ${
+                  item.params
+                    ? `<button type="button" class="btn btn-secondary" data-action="use-frequent" data-index="${index}">上に反映</button>`
+                    : ""
+                }
+                <button type="button" class="btn btn-secondary" data-action="copy-frequent" data-index="${index}">コピー</button>
+                <a class="btn btn-primary" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">開く</a>
+              </div>
+            </div>
+
+            <div class="url-box">${escapeHtml(url)}</div>
+          </article>
+        `;
+      }).join("");
+
+      frequentLinksEl.innerHTML = html;
+    }
+
+    async function copyText(text) {
+      if (!text) return false;
+
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      } catch (error) {
+        // フォールバックへ
+      }
+
+      const helper = document.createElement("textarea");
+      helper.value = text;
+      helper.setAttribute("readonly", "");
+      helper.style.position = "fixed";
+      helper.style.top = "-9999px";
+      helper.style.left = "-9999px";
+      document.body.appendChild(helper);
+      helper.focus();
+      helper.select();
+
+      let copied = false;
+      try {
+        copied = document.execCommand("copy");
+      } catch (error) {
+        copied = false;
+      }
+
+      document.body.removeChild(helper);
+      return copied;
+    }
+
+    function flashButtonText(button, text, duration = 1400) {
+      if (!button) return;
+
+      if (!button.dataset.originalText) {
+        button.dataset.originalText = button.textContent;
+      }
+
+      clearTimeout(button._flashTimer);
+      button.textContent = text;
+
+      button._flashTimer = setTimeout(() => {
+        button.textContent = button.dataset.originalText;
+      }, duration);
+    }
+
+    function updatePageOffset() {
+      pageContentEl.style.marginTop = `${generatorPanelEl.offsetHeight + 14}px`;
+    }
+
+    function wireEvents() {
+      paramFieldsEl.addEventListener("focusin", (event) => {
+        const input = event.target.closest("[data-param-display-key]");
+        if (!input) return;
+
+        const key = input.dataset.paramDisplayKey;
+        if (getSuggestionsForKey(key).length) {
+          openSuggestionPanel(key, input.value);
+        }
+      });
+
+      paramFieldsEl.addEventListener("input", (event) => {
+        const input = event.target.closest("[data-param-display-key]");
+        if (!input) return;
+
+        const key = input.dataset.paramDisplayKey;
+        const valueInput = getValueInput(key);
+        const hasSuggestions = getSuggestionsForKey(key).length > 0;
+        const currentText = input.value;
+        const selectedLabel = input.dataset.selectedLabel || "";
+
+        if (currentText !== selectedLabel) {
+          if (valueInput) {
+            valueInput.value = "";
+          }
+          delete input.dataset.selectedLabel;
+          delete input.dataset.selectedValue;
+          delete input.dataset.selectionMode;
+        }
+
+        if (hasSuggestions) {
+          openSuggestionPanel(key, currentText);
+        } else {
+          if (valueInput) {
+            valueInput.value = currentText.trim();
+          }
+          input.dataset.selectedLabel = currentText.trim();
+          input.dataset.selectedValue = currentText.trim();
+          input.dataset.selectionMode = "free";
+          closeSuggestionPanel(key);
+        }
+
+        updateGeneratedUrl();
+      });
+
+      paramFieldsEl.addEventListener("keydown", (event) => {
+        const input = event.target.closest("[data-param-display-key]");
+        if (!input) return;
+
+        const key = input.dataset.paramDisplayKey;
+
+        if (event.key === "Enter") {
+          event.preventDefault();
+          commitDisplayInput(key);
+          return;
+        }
+
+        if (event.key === "Escape") {
+          closeSuggestionPanel(key);
+        }
+      });
+
+      paramFieldsEl.addEventListener("focusout", (event) => {
+        const input = event.target.closest("[data-param-display-key]");
+        if (!input) return;
+
+        const key = input.dataset.paramDisplayKey;
+
+        setTimeout(() => {
+          const fieldBox = getFieldBox(key);
+          if (!fieldBox) return;
+
+          if (!fieldBox.contains(document.activeElement)) {
+            commitDisplayInput(key);
+          }
+        }, 0);
+      });
+
+      paramFieldsEl.addEventListener("pointerdown", (event) => {
+        const option = event.target.closest('[data-action="choose-suggestion"]');
+        if (!option) return;
+
+        event.preventDefault();
+
+        selectSuggestion(option.dataset.key, {
+          label: option.dataset.label,
+          value: option.dataset.value
+        });
+
+        const input = getDisplayInput(option.dataset.key);
+        if (input) input.focus();
+      });
+
+      document.addEventListener("click", (event) => {
+        if (!paramFieldsEl.contains(event.target)) {
+          closeAllSuggestionPanels();
+        }
+      });
+
+      generatedUrlEl.addEventListener("click", () => {
+        generatedUrlEl.select();
+      });
+
+      copyGeneratedBtnEl.addEventListener("click", async () => {
+        commitAllDisplayInputs();
+        const ok = await copyText(generatedUrlEl.value);
+        flashButtonText(copyGeneratedBtnEl, ok ? "コピー済み" : "失敗");
+      });
+
+      openGeneratedLinkEl.addEventListener("click", () => {
+        commitAllDisplayInputs();
+        openGeneratedLinkEl.href = generatedUrlEl.value;
+      });
+
+      resetBtnEl.addEventListener("click", () => {
+        resetForm();
+        flashButtonText(resetBtnEl, "リセット済み");
+      });
+
+      frequentLinksEl.addEventListener("click", async (event) => {
+        const useButton = event.target.closest('[data-action="use-frequent"]');
+        if (useButton) {
+          const index = Number(useButton.dataset.index);
+          const item = FREQUENT_LINKS[index];
+
+          if (item && item.params) {
+            applyParamsToForm(item.params);
+            flashButtonText(useButton, "反映済み");
+          }
+          return;
+        }
+
+        const copyButton = event.target.closest('[data-action="copy-frequent"]');
+        if (copyButton) {
+          const index = Number(copyButton.dataset.index);
+          const item = FREQUENT_LINKS[index];
+          if (!item) return;
+
+          const ok = await copyText(resolveFrequentLink(item));
+          flashButtonText(copyButton, ok ? "コピー済み" : "失敗");
+        }
+      });
+
+      window.addEventListener("resize", updatePageOffset);
+      window.addEventListener("load", updatePageOffset);
+    }
+
+    function init() {
+      baseUrlTextEl.textContent = BASE_URL;
+      renderParamFields();
+      renderFrequentLinks();
+      wireEvents();
+      updateGeneratedUrl();
+      updatePageOffset();
+    }
+
+    init();
+  </script>
+</body>
+</html>
