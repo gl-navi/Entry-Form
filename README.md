@@ -1,6 +1,5 @@
 # ASSET (HTML,CSS,JS) FOR RECRUIT-FORM
-DO NOT MAKE THIS REPOSITORY PRIVATE. The assets are retrieved from company homepage frontend as public assets.
-こちらのレポジトリを非公開にしないでください。 会社ホームページのフロントエンドから公開アセットとしてロードしています。
+
 
 ### GL Navi HomePage採用フォーム: <br />
 1．新卒採用-説明会前: <a href="https://gl-navi.github.io/Entry-Form/newgrad_form_before.js" target="_blank">newgrad_form_before CDN</a>          <br />
@@ -19,7 +18,3 @@ DO NOT MAKE THIS REPOSITORY PRIVATE. The assets are retrieved from company homep
 
 
 
-
-POSSIBLE TODOS:
-1. All the forms have mostly identical code (~80%). Making one master file for the common code and making short "config" file for each form might be a better practice.
-2. Github Page is used to host the assets but JSDelivr might be faster and more reliable
