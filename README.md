@@ -1,20 +1,54 @@
-# ASSET (HTML,CSS,JS) FOR RECRUIT-FORM
+# Recruit Form Assets
 
+HTML / CSS / JS assets used by the **GL Navi recruitment forms**.
 
-### GL Navi HomePage採用フォーム: <br />
-1．新卒採用-説明会前: <a href="https://gl-navi.github.io/Entry-Form/newgrad_form_before.js" target="_blank">newgrad_form_before CDN</a>          <br />
-   → <a href="https://recruit.gl-navi.co.jp/newgrad/register">Newgrad form for 説明会</a> is loading this asset publicly.         <br />
-2．新卒採用-説明会後: <a href="https://gl-navi.github.io/Entry-Form/newgrad_form_after.js">newgrad_form_after CDN</a>            <br />
-   → <a href="https://recruit.gl-navi.co.jp/newgrad/entry">Newgrad form for 本選考エントリー</a> is loading this asset publicly.         <br />
-3．中途採用-カジュアル面談前: <a href="https://gl-navi.github.io/Entry-Form/midcareer_form_before.js">midcareer_form_before CDN</a>        <br />
-   → <a href="https://recruit.gl-navi.co.jp/mid-career/register">Midcareers form for カジュアル面談</a> is loading this asset publicly. Not used often anymore.         <br />
-4．中途採用-カジュアル面談後: <a href="https://gl-navi.github.io/Entry-Form/midcareer_form_after.js">midcareer_form_after CDN</a>         <br />
-   → <a href="https://recruit.gl-navi.co.jp/mid-career/entry">Midcareers form for 本選考エントリー</a> is loading this asset publicly.         <br />
-5．ホームページ流入用フォーム: <a href="https://gl-navi.github.io/Entry-Form/HP_form.js">HP_form CDN</a>         <br />
-   → <a href="https://recruit.gl-navi.co.jp/apply">HP form for 本選考エントリー</a> is loading this asset publicly. 新卒も中途も応募可能で、Salesforceの応募媒体が自動でホームページになる。         <br />
-6．インターン応募用フォーム: <a href="https://gl-navi.github.io/Entry-Form/internship_application.js">intern form content CDN</a>         <br />
-   → <a href="https://recruit.gl-navi.co.jp/apply/intern">Newgrad form for インターン</a> is loading this asset publicly. Salesforceの新卒レコードタイプで応募職種が自動でインターンになる。         <br />
+## 📋 Form Assets
 
+| # | Form                | CDN Asset                                                                                   | Recruitment Form                                                 | Notes                                         |
+| - | ------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | --------------------------------------------- |
+| 1 | **新卒採用 — 説明会前**     | [newgrad_form_before.js](https://gl-navi.github.io/Entry-Form/newgrad_form_before.js)       | [説明会フォーム](https://recruit.gl-navi.co.jp/newgrad/register)        | Publicly loads this asset                     |
+| 2 | **新卒採用 — 説明会後**     | [newgrad_form_after.js](https://gl-navi.github.io/Entry-Form/newgrad_form_after.js)         | [本選考エントリーフォーム](https://recruit.gl-navi.co.jp/newgrad/entry)      | Publicly loads this asset                     |
+| 3 | **中途採用 — カジュアル面談前** | [midcareer_form_before.js](https://gl-navi.github.io/Entry-Form/midcareer_form_before.js)   | [カジュアル面談フォーム](https://recruit.gl-navi.co.jp/mid-career/register) | Not used often anymore                        |
+| 4 | **中途採用 — カジュアル面談後** | [midcareer_form_after.js](https://gl-navi.github.io/Entry-Form/midcareer_form_after.js)     | [本選考エントリーフォーム](https://recruit.gl-navi.co.jp/mid-career/entry)   | Publicly loads this asset                     |
+| 5 | **ホームページ流入用**       | [HP_form.js](https://gl-navi.github.io/Entry-Form/HP_form.js)                               | [本選考エントリーフォーム](https://recruit.gl-navi.co.jp/apply)              | 新卒・中途どちらも応募可能。Salesforceの応募媒体は自動で「ホームページ」になる  |
+| 6 | **インターン応募用**        | [internship_application.js](https://gl-navi.github.io/Entry-Form/internship_application.js) | [インターン応募フォーム](https://recruit.gl-navi.co.jp/apply/intern)        | Salesforceでは新卒レコードタイプで登録され、応募職種は自動で「インターン」になる |
 
+## 🔗 Asset → Form Mapping
 
+### 新卒採用
 
+**説明会前**
+
+* Asset: `newgrad_form_before.js`
+* Form: `/newgrad/register`
+
+**説明会後**
+
+* Asset: `newgrad_form_after.js`
+* Form: `/newgrad/entry`
+
+### 中途採用
+
+**カジュアル面談前**
+
+* Asset: `midcareer_form_before.js`
+* Form: `/mid-career/register`
+
+**カジュアル面談後**
+
+* Asset: `midcareer_form_after.js`
+* Form: `/mid-career/entry`
+
+### その他
+
+**ホームページ流入**
+
+* Asset: `HP_form.js`
+* Form: `/apply`
+* 新卒・中途の両方に対応
+
+**インターン**
+
+* Asset: `internship_application.js`
+* Form: `/apply/intern`
+* 応募職種を自動的に「インターン」として登録
