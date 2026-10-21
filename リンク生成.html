@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>リンク生成ツール (中途採用のエントリーのみ)</title>
+  <title>リンク生成ツール</title>
 
   <style>
     :root {
@@ -182,6 +182,10 @@
       gap: 10px;
     }
 
+    .params-row[hidden] {
+      display: none;
+    }
+
     .field-box {
       position: relative;
     }
@@ -355,6 +359,70 @@
       word-break: break-all;
     }
 
+    .form-select-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .form-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .form-tab {
+      appearance: none;
+      border: 1px solid var(--sf-border);
+      background: #fff;
+      color: var(--sf-blue-deep);
+      border-radius: 999px;
+      padding: 5px 11px;
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .form-tab:hover {
+      background: #f8fbff;
+      border-color: #aacbff;
+    }
+
+    .form-tab[aria-pressed="true"] {
+      background: var(--sf-blue);
+      border-color: var(--sf-blue);
+      color: #fff;
+    }
+
+    .form-tab:focus-visible,
+    .btn:focus-visible {
+      outline: 2px solid var(--sf-blue-deep);
+      outline-offset: 2px;
+    }
+
+    .form-notice {
+      margin-top: 8px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      background: #fef7e5;
+      border: 1px solid #f3d58a;
+      color: #5c4400;
+      font-size: 0.82rem;
+    }
+
+    .form-notice[hidden] {
+      display: none;
+    }
+
+    .badge-form {
+      background: var(--sf-blue-deep);
+      border-color: var(--sf-blue-deep);
+      color: #fff;
+    }
+
     @media (max-width: 760px) {
       .generated-row {
         grid-template-columns: 1fr 1fr 1fr;
@@ -374,6 +442,11 @@
   <div id="generatorPanel" class="topbar">
     <div class="container">
       <h1 class="sr-only">リンク生成ツール</h1>
+
+      <div class="form-select-row">
+        <span class="meta-label">フォーム</span>
+        <div id="formTabs" class="form-tabs"></div>
+      </div>
 
       <div class="meta-row">
         <span class="meta-label">ベースURL</span>
@@ -395,6 +468,8 @@
 
       <div id="paramFields" class="params-row"></div>
 
+      <div id="formNotice" class="form-notice" hidden></div>
+
       <div id="selectedSummary" class="selection-row" aria-live="polite"></div>
     </div>
   </div>
@@ -411,9 +486,58 @@
 
   <script>
     // =========================================================
-    // 1) ベースURL
+    // 1) フォーム定義
+    //    params = そのフォームのJSが実際に読み取るURLパラメータ
+    //    （読み取らないパラメータを付けても Salesforce には入りません）
+    //    exclude = そのフォームで選択肢から外す値
     // =========================================================
-    const BASE_URL = "https://recruit.gl-navi.co.jp/mid-career/entry";
+    const FORMS = [
+      {
+        id: "mid_entry",
+        label: "中途 本選考エントリー",
+        baseUrl: "https://recruit.gl-navi.co.jp/mid-career/entry",
+        params: ["source", "rt", "occupation"]
+      },
+      {
+        id: "mid_register",
+        label: "中途 カジュアル面談",
+        baseUrl: "https://recruit.gl-navi.co.jp/mid-career/register",
+        params: ["occupation"],
+        exclude: { occupation: ["designer"] },
+        note: "このフォームは occupation のみ読み取ります（source / rt は無視されます）。designer を指定するとトップページへリダイレクトされるため、候補から外しています。"
+      },
+      {
+        id: "newgrad_register",
+        label: "新卒 説明会",
+        baseUrl: "https://recruit.gl-navi.co.jp/newgrad/register",
+        params: [],
+        note: "このフォームはURLパラメータを読み取らないため、ベースURLのみ生成します。"
+      },
+      {
+        id: "newgrad_entry",
+        label: "新卒 本選考エントリー",
+        baseUrl: "https://recruit.gl-navi.co.jp/newgrad/entry",
+        params: [],
+        note: "このフォームはURLパラメータを読み取らないため、ベースURLのみ生成します。"
+      },
+      {
+        id: "hp",
+        label: "ホームページ",
+        baseUrl: "https://recruit.gl-navi.co.jp/apply",
+        params: [],
+        note: "このフォームはURLパラメータを読み取りません。応募媒体は自動で「ホームページ」になります。"
+      },
+      {
+        id: "intern",
+        label: "インターン",
+        baseUrl: "https://recruit.gl-navi.co.jp/apply/intern",
+        params: [],
+        note: "このフォームはURLパラメータを読み取りません。応募職種は自動で「インターン」になります。"
+      }
+    ];
+
+    // このページを ?form=hp のように開くと、そのフォームが最初に選択されます
+    const DEFAULT_FORM_ID = "mid_entry";
 
     // =========================================================
     // 2) パラメータ定義
@@ -453,24 +577,54 @@
           { label: "JapanWing", value: "jw" }
         ],
         defaultValue: ""
+      },
+      {
+        key: "occupation",
+        label: "応募職種（occupation）",
+        placeholder: "入力して検索 / クリックして選択",
+        help: "Salesforceの応募職種に入ります。",
+        // 値はフォームJSの occupations と一致させること
+        suggestions: [
+          { label: "インサイドセールス", value: "is" },
+          { label: "フィールドセールス", value: "fs" },
+          { label: "フィールドセールス・エクスパート", value: "fs_expert" },
+          { label: "Japan Wingセールス", value: "jw_sales" },
+          { label: "Japan Wing講師", value: "jw_instructor" },
+          { label: "DXコンサルタント・エントリーレベル", value: "c_entry" },
+          { label: "DXコンサルタント", value: "c" },
+          { label: "DXコンサルタント・エクスパート", value: "c_expert" },
+          { label: "データサイエンティスト", value: "ds" },
+          { label: "コーポレートファンクション", value: "cf" },
+          { label: "Brand / UIUX Designer（ジュニア〜ミドル）", value: "designer" }
+        ],
+        defaultValue: ""
       }
     ];
 
     // =========================================================
     // 3) 固定リンク
+    //    form には FORMS の id を指定（省略時は DEFAULT_FORM_ID）
     //    params には実際にURLへ入る value を指定
     // =========================================================
     const FREQUENT_LINKS = [
-      { label: "Indeed / 中途本社", params: { source: "indeed", rt: "consultant" } },
-      { label: "リクナビHRTech / 中途本社", params: { source: "rikunavihrtech", rt: "consultant" } },
-      { label: "Green / 中途コンサル", params: { source: "green", rt: "consultant" } },
-      { label: "ホームページ / JapanWing", params: { source: "hp", rt: "jw" } },
-      { label: "その他 / 中途本社", params: { source: "other", rt: "hq" } }
+      { label: "Indeed / 中途コンサル", form: "mid_entry", params: { source: "indeed", rt: "consultant" } },
+      { label: "リクナビHRTech / 中途コンサル", form: "mid_entry", params: { source: "rikunavihrtech", rt: "consultant" } },
+      { label: "Green / 中途コンサル", form: "mid_entry", params: { source: "green", rt: "consultant" } },
+      { label: "ホームページ / JapanWing", form: "mid_entry", params: { source: "hp", rt: "jw" } },
+      { label: "その他 / 中途本社", form: "mid_entry", params: { source: "other", rt: "hq" } },
+      { label: "Indeed / 中途コンサル / DXコンサルタント", form: "mid_entry", params: { source: "indeed", rt: "consultant", occupation: "c" } },
+      { label: "カジュアル面談 / インサイドセールス", form: "mid_register", params: { occupation: "is" } },
+      { label: "新卒 説明会", form: "newgrad_register", params: {} },
+      { label: "新卒 本選考エントリー", form: "newgrad_entry", params: {} },
+      { label: "ホームページ応募", form: "hp", params: {} },
+      { label: "インターン応募", form: "intern", params: {} }
 
       // 追加例:
       // ,
-      // { label: "パソナ / 中途本社", params: { source: "pasona", rt: "hq" } }
+      // { label: "パソナ / 中途本社 / IS", form: "mid_entry", params: { source: "pasona", rt: "hq", occupation: "is" } }
     ];
+
+    let currentFormId = DEFAULT_FORM_ID;
 
     const paramFieldsEl = document.getElementById("paramFields");
     const generatedUrlEl = document.getElementById("generatedUrl");
@@ -482,6 +636,22 @@
     const frequentLinksEl = document.getElementById("frequentLinks");
     const generatorPanelEl = document.getElementById("generatorPanel");
     const pageContentEl = document.getElementById("pageContent");
+    const formTabsEl = document.getElementById("formTabs");
+    const formNoticeEl = document.getElementById("formNotice");
+
+    function getFormById(id) {
+      return FORMS.find((form) => form.id === id) || null;
+    }
+
+    function getCurrentForm() {
+      return getFormById(currentFormId) || FORMS[0];
+    }
+
+    // 現在のフォームで使えるパラメータ定義だけを返す
+    function getActiveParams(formId = currentFormId) {
+      const form = getFormById(formId) || FORMS[0];
+      return PARAMS_CONFIG.filter((param) => form.params.includes(param.key));
+    }
 
     function escapeHtml(value) {
       const map = {
@@ -529,16 +699,21 @@
       return PARAMS_CONFIG.find((param) => param.key === key) || null;
     }
 
-    function getSuggestionsForKey(key) {
+    function getAllSuggestionsForKey(key) {
       const param = getParamConfigByKey(key);
       return normalizeSuggestions(param?.suggestions || []);
+    }
+
+    function getSuggestionsForKey(key) {
+      const excluded = getCurrentForm().exclude?.[key] || [];
+      return getAllSuggestionsForKey(key).filter((item) => !excluded.includes(item.value));
     }
 
     function findSuggestionByValue(key, actualValue) {
       const value = String(actualValue ?? "").trim();
       if (!value) return null;
 
-      return getSuggestionsForKey(key).find((item) => item.value === value) || null;
+      return getAllSuggestionsForKey(key).find((item) => item.value === value) || null;
     }
 
     function findExactSuggestionMatch(key, rawText) {
@@ -569,19 +744,21 @@
       });
     }
 
-    function buildUrl(params = {}) {
-      const url = new URL(BASE_URL);
+    function buildUrl(params = {}, formId = currentFormId) {
+      const form = getFormById(formId) || FORMS[0];
+      const url = new URL(form.baseUrl);
 
       PARAMS_CONFIG.forEach((param) => {
         url.searchParams.delete(param.key);
       });
 
-      for (const [key, rawValue] of Object.entries(params)) {
-        const value = String(rawValue ?? "").trim();
+      // フォームが読み取るパラメータだけをURLに入れる（順番もフォーム定義に合わせる）
+      form.params.forEach((key) => {
+        const value = String(params[key] ?? "").trim();
         if (value) {
           url.searchParams.set(key, value);
         }
-      }
+      });
 
       return url.toString();
     }
@@ -601,7 +778,7 @@
 
     function resolveFrequentLink(item) {
       if (item.url) return item.url;
-      return buildUrl(item.params || {});
+      return buildUrl(item.params || {}, item.form || DEFAULT_FORM_ID);
     }
 
     function getDisplayInput(key) {
@@ -681,7 +858,7 @@
     }
 
     function closeAllSuggestionPanels(exceptKey = null) {
-      PARAMS_CONFIG.forEach((param) => {
+      getActiveParams().forEach((param) => {
         if (param.key !== exceptKey) {
           closeSuggestionPanel(param.key);
         }
@@ -787,13 +964,13 @@
     }
 
     function commitAllDisplayInputs() {
-      PARAMS_CONFIG.forEach((param) => {
+      getActiveParams().forEach((param) => {
         commitDisplayInput(param.key);
       });
     }
 
     function renderParamFields() {
-      const html = PARAMS_CONFIG.map((param, index) => {
+      const html = getActiveParams().map((param, index) => {
         const inputId = `param-display-${param.key}`;
 
         return `
@@ -822,16 +999,54 @@
       }).join("");
 
       paramFieldsEl.innerHTML = html;
+      paramFieldsEl.hidden = html === "";
 
-      PARAMS_CONFIG.forEach((param) => {
+      getActiveParams().forEach((param) => {
         setFieldValue(param.key, param.defaultValue || "");
       });
+    }
+
+    function renderFormTabs() {
+      formTabsEl.innerHTML = FORMS.map((form) => {
+        const pressed = form.id === currentFormId ? "true" : "false";
+        return `<button type="button" class="form-tab" data-form-id="${escapeHtml(form.id)}" aria-pressed="${pressed}">${escapeHtml(form.label)}</button>`;
+      }).join("");
+    }
+
+    function renderFormNotice() {
+      const note = getCurrentForm().note || "";
+      formNoticeEl.textContent = note;
+      formNoticeEl.hidden = !note;
+    }
+
+    // フォームを切り替える。両方のフォームにあるパラメータの値は引き継ぐ
+    function switchForm(formId, params = null) {
+      if (!getFormById(formId)) return;
+
+      const carryOver = params ?? getCurrentParams();
+      currentFormId = formId;
+
+      baseUrlTextEl.textContent = getCurrentForm().baseUrl;
+      renderFormTabs();
+      renderFormNotice();
+      renderParamFields();
+
+      const excludedFor = getCurrentForm().exclude || {};
+      getActiveParams().forEach((param) => {
+        const value = carryOver[param.key];
+        const excluded = excludedFor[param.key] || [];
+        if (value && !excluded.includes(value)) {
+          setFieldValue(param.key, value);
+        }
+      });
+
+      updateGeneratedUrl();
     }
 
     function getCurrentParams() {
       const params = {};
 
-      PARAMS_CONFIG.forEach((param) => {
+      getActiveParams().forEach((param) => {
         const input = getValueInput(param.key);
         params[param.key] = input ? input.value : "";
       });
@@ -868,7 +1083,7 @@
     }
 
     function resetForm() {
-      PARAMS_CONFIG.forEach((param) => {
+      getActiveParams().forEach((param) => {
         setFieldValue(param.key, param.defaultValue || "");
         closeSuggestionPanel(param.key);
       });
@@ -877,7 +1092,7 @@
     }
 
     function applyParamsToForm(params = {}) {
-      PARAMS_CONFIG.forEach((param) => {
+      getActiveParams().forEach((param) => {
         const value = params[param.key] ?? param.defaultValue ?? "";
         setFieldValue(param.key, value);
         closeSuggestionPanel(param.key);
@@ -890,8 +1105,11 @@
       const html = FREQUENT_LINKS.map((item, index) => {
         const url = resolveFrequentLink(item);
 
+        const formLabel = (getFormById(item.form || DEFAULT_FORM_ID) || FORMS[0]).label;
+        const formBadge = `<span class="badge badge-form">${escapeHtml(formLabel)}</span>`;
+
         const badges = item.params
-          ? Object.entries(item.params)
+          ? formBadge + Object.entries(item.params)
               .filter(([, rawValue]) => String(rawValue ?? "").trim() !== "")
               .map(([key, value]) => {
                 return `<span class="badge">${escapeHtml(buildCompactParamText(key, value))}</span>`;
@@ -1104,6 +1322,7 @@
           const item = FREQUENT_LINKS[index];
 
           if (item && item.params) {
+            switchForm(item.form || DEFAULT_FORM_ID, {});
             applyParamsToForm(item.params);
             flashButtonText(useButton, "反映済み");
           }
@@ -1121,16 +1340,24 @@
         }
       });
 
+      formTabsEl.addEventListener("click", (event) => {
+        const tab = event.target.closest("[data-form-id]");
+        if (!tab) return;
+        commitAllDisplayInputs();
+        switchForm(tab.dataset.formId);
+      });
+
       window.addEventListener("resize", updatePageOffset);
       window.addEventListener("load", updatePageOffset);
     }
 
     function init() {
-      baseUrlTextEl.textContent = BASE_URL;
-      renderParamFields();
+      const requestedForm = new URLSearchParams(window.location.search).get("form");
+      currentFormId = getFormById(requestedForm) ? requestedForm : DEFAULT_FORM_ID;
+
       renderFrequentLinks();
       wireEvents();
-      updateGeneratedUrl();
+      switchForm(currentFormId, {});
       updatePageOffset();
     }
 
