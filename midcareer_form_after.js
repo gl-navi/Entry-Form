@@ -198,6 +198,23 @@
     let recordType = "中途コンサルレコードタイプ"; // Intentional default; overridden by URL path/query when present.
     let sourcePlatform = "";
 
+    // Short codes used by links made before 2026-10. Frozen: do NOT add new entries here.
+    // New sources go straight into the link generator using the exact Salesforce picklist value.
+    // This can be deleted once no published link uses these codes.
+    const legacySourceCodes = {
+        indeed: "Indeed",
+        rikunavihrtech: "リクナビHRTech",
+        rcc: "RCC",
+        pasona: "パソナ",
+        green: "Green",
+        nikkei: "日経",
+        hp: "ホームページ",
+        miraiworks: "みらいワークス",
+        type: "type",
+        tokyojf: "東京都Jobfair",
+        other: "その他"
+    };
+
     const pathSegments = window.location.pathname.split("/").filter(Boolean);
     const lastSegment = pathSegments[pathSegments.length - 1];
     if (lastSegment && Object.prototype.hasOwnProperty.call(recordTypes, lastSegment)) {
@@ -211,7 +228,13 @@
             const key = occVal.toLowerCase();
             if (Object.prototype.hasOwnProperty.call(occupations, key)) occupation = occupations[key];
         }
-        sourcePlatform = (params.get("source") || "").toLowerCase();
+        // source is passed to Salesforce as-is (it must match the picklist value exactly).
+        // Old links used short codes; convert those so links already published keep working.
+        const sourceVal = (params.get("source") || "").trim().slice(0, 255);
+        const legacyKey = sourceVal.toLowerCase();
+        sourcePlatform = Object.prototype.hasOwnProperty.call(legacySourceCodes, legacyKey)
+            ? legacySourceCodes[legacyKey]
+            : sourceVal;
         const rt = params.get("rt");
         if (rt) {
             const key = rt.toLowerCase();
