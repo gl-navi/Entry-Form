@@ -182,9 +182,8 @@
 
     // === URL Param Parsing ===
     const occupations = {
-        "is": "インサイドセールス", "fs": "フィールドセールス", "fs_expert": "フィールドセールス・エクスパート",
-        "jw_sales": "Japan Wingセールス", "jw_instructor": "Japan Wing講師",
-        "c_entry": "DXコンサルタント・エントリーレベル", "c": "DXコンサルタント", "c_expert": "DXコンサルタント・エクスパート",
+        "is": "インサイドセールス", "fs": "フィールドセールス", "fs_expert": "フィールドセールス・エキスパート",
+        "c_entry": "DXコンサルタント・エントリーレベル", "c": "DXコンサルタント", "c_expert": "DXコンサルタント・エキスパート",
         "ds": "データサイエンティスト", "cf": "コーポレートファンクション",
         "designer": "Brand / UIUX Designer（ジュニア〜ミドル）"
     };
