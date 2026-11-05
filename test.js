@@ -23,13 +23,13 @@
     // (Pipedream workflow → Salesforce. Edit here only.)
     // ============================================================
     const ENDPOINTS = {
-        newgrad_before:   'https://glnavigation.app.n8n.cloud/webhook-test/recruit-newgrad-before',
-        newgrad_after:    'https://glnavigation.app.n8n.cloud/webhook-test/recruit-newgrad-after',
-        midcareer_before: 'https://glnavigation.app.n8n.cloud/webhook-test/recruit-midcareer-entry',
-        midcareer_after:  'https://glnavigation.app.n8n.cloud/webhook-test/recruit-midcareer-casual',
-        hp:               'https://glnavigation.app.n8n.cloud/webhook-test/recruit-hp-form',
-        internship:       'https://glnavigation.app.n8n.cloud/webhook-test/recruit-internship',
-        errorLog:         'https://eoimhkgidqcxp6a.m.pipedream.net' // failure reports, shared by every form
+        newgrad_before:   'https://glnavigation.app.n8n.cloud/webhook/recruit-newgrad-before',
+        newgrad_after:    'https://glnavigation.app.n8n.cloud/webhook/recruit-newgrad-after',
+        midcareer_before: 'https://glnavigation.app.n8n.cloud/webhook/recruit-midcareer-entry',
+        midcareer_after:  'https://glnavigation.app.n8n.cloud/webhook/recruit-midcareer-casual',
+        hp:               'https://glnavigation.app.n8n.cloud/webhook/recruit-hp-form',
+        internship:       'https://glnavigation.app.n8n.cloud/webhook/recruit-internship',
+        errorLog:         'https://glnavigation.app.n8n.cloud/webhook/recruit-form-error-report' // failure reports, shared by every form
     };
 
     // ============================================================
