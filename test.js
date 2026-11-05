@@ -25,8 +25,8 @@
     const ENDPOINTS = {
         newgrad_before:   'https://glnavigation.app.n8n.cloud/webhook/recruit-newgrad-before',
         newgrad_after:    'https://glnavigation.app.n8n.cloud/webhook/recruit-newgrad-after',
-        midcareer_before: 'https://glnavigation.app.n8n.cloud/webhook/recruit-midcareer-entry',
-        midcareer_after:  'https://glnavigation.app.n8n.cloud/webhook/recruit-midcareer-casual',
+        midcareer_before: 'https://glnavigation.app.n8n.cloud/webhook/recruit-midcareer-casual',
+        midcareer_after:  'https://glnavigation.app.n8n.cloud/webhook/recruit-midcareer-entry',
         hp:               'https://glnavigation.app.n8n.cloud/webhook/recruit-hp-form',
         internship:       'https://glnavigation.app.n8n.cloud/webhook/recruit-internship',
         errorLog:         'https://glnavigation.app.n8n.cloud/webhook/recruit-form-error-report' // failure reports, shared by every form
