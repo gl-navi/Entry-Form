@@ -1,0 +1,37 @@
+name: Deploy forms to S3/CloudFront
+
+on:
+  push:
+    branches: ['master', 'dev']
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'master' && 'production' || 'development' }}
+    concurrency:
+      group: deploy-${{ github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assemble files to publish
+        run: |
+          mkdir dist
+          cp HP_form.js internship_application.js \
+             midcareer_form_before.js midcareer_form_after.js \
+             newgrad_form_before.js newgrad_form_after.js \
+             リンク生成.html test.js \
+             dist/
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ap-northeast-1
+      - run: aws s3 sync ./dist s3://${{ vars.S3_BUCKET }}/public --delete
+      - run: aws cloudfront create-invalidation --distribution-id ${{ vars.CF_DISTRIBUTION_ID }} --paths "/*"
