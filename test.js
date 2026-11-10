@@ -158,7 +158,6 @@
         "ds": "データサイエンティスト", "cf": "コーポレートファンクション",
         "designer": "Brand / UIUX Designer（ジュニア〜ミドル）"
     };
-    const DESIGNER = "Brand / UIUX Designer（ジュニア〜ミドル）";
     const RECORD_TYPES_MID_BEFORE = {
         "h": "中途本社レコードタイプ", "c": "中途コンサルレコードタイプ", "j": "JapanWingレコードタイプ",
         "honsya": "中途本社レコードタイプ", "konsaru": "中途コンサルレコードタイプ", "japanwing": "JapanWingレコードタイプ",
@@ -244,7 +243,7 @@
             gtag: { label: 'New Grad Form' },
             attachNote: false,
             routing: { occupations: OCCUPATIONS_MID, recordTypes: RECORD_TYPES_MID_BEFORE,
-                       defaultRecordType: '中途コンサルレコードタイプ', designerRedirect: 'https://recruit.gl-navi.co.jp/' },
+                       defaultRecordType: '中途コンサルレコードタイプ' },
             mail: mail('中途採用応募 (フォームエラー)', INTRO,
                 [NAME, IT.phone, IT.email],
                 'ご確認のほどよろしくお願いいたします。')
@@ -361,10 +360,6 @@
             const occ = params.get('occupation');
             if (occ && own(R.occupations, occ.toLowerCase())) {
                 occupation = R.occupations[occ.toLowerCase()];
-                if (R.designerRedirect && occupation === DESIGNER) {
-                    window.location.href = R.designerRedirect;
-                    return;
-                }
             }
             if (R.rtParam) {
                 const rt = params.get('rt');
