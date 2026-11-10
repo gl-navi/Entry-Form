@@ -209,10 +209,6 @@
             const occupationKey = occupationParam.toLowerCase();
             if (Object.prototype.hasOwnProperty.call(occupations, occupationKey)) {
                 occupation = occupations[occupationKey];
-                if (occupation === "Brand / UIUX Designer（ジュニア〜ミドル）") {
-                    window.location.href = "https://recruit.gl-navi.co.jp/";
-                    return; // FIX #7: stop running form setup during redirect race
-                }
             }
         }
     }
