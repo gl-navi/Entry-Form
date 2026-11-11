@@ -1,9 +1,9 @@
 (function () {
     'use strict';
 
-    // === CONFIG — change PIPEDREAM_URL here to test failures ===
-    const PIPEDREAM_URL = 'https://eo1jbij8tb2xgqu.m.pipedream.net';
-    const ERROR_LOG_URL = 'https://eoimhkgidqcxp6a.m.pipedream.net';
+    // === CONFIG — change N8N_URL here to test failures ===
+    const N8N_URL = 'https://glnavigation.app.n8n.cloud/webhook/recruit-midcareer-entry';
+    const ERROR_LOG_URL = 'https://glnavigation.app.n8n.cloud/webhook/recruit-form-error-report';
     const FETCH_TIMEOUT_MS = 10000;
     const FETCH_MAX_RETRIES = 1;
     const MARKETO_MAX_WAIT_MS = 8000;
@@ -317,8 +317,8 @@
         // Marketo: fire-and-forget. Throwing/blocking here MUST NOT affect the redirect.
         submitToMarketoSafe(formData);
 
-        // Pipedream: critical path
-        submitToPipedream(formData)
+        // n8n: critical path
+        submitToN8n(formData)
             .then(function () {
                 form.reset();
                 fileNameDisplay.textContent = 'ファイルを選択';
@@ -358,12 +358,12 @@
         }
     }
 
-    async function submitToPipedream(formData) {
+    async function submitToN8n(formData) {
         for (let attempt = 0; attempt <= FETCH_MAX_RETRIES; attempt++) {
             const controller = new AbortController();
             const timeoutId = setTimeout(function () { controller.abort(); }, FETCH_TIMEOUT_MS);
             try {
-                const response = await fetch(PIPEDREAM_URL, {
+                const response = await fetch(N8N_URL, {
                     method: 'POST', body: formData, signal: controller.signal
                 });
                 clearTimeout(timeoutId);
@@ -381,7 +381,7 @@
                 clearTimeout(timeoutId);
                 if (err.status) throw err;            // server-side error: do not retry
                 if (attempt === FETCH_MAX_RETRIES) throw err;
-                console.log(`Pipedream attempt ${attempt + 1} failed (${err.name}). Retrying...`);
+                console.log(`n8n attempt ${attempt + 1} failed (${err.name}). Retrying...`);
                 await new Promise(function (res) { setTimeout(res, 1000); });
             }
         }
