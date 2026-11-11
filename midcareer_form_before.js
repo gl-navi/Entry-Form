@@ -266,7 +266,7 @@
 
     // FIX #2: Marketo is fire-and-forget. Wrapped in try/catch so any
     // sync error (undefined mktoFormEl, missing fields, etc.) is contained
-    // and CANNOT bubble up into the Pipedream success chain.
+    // and CANNOT bubble up into the n8n success chain.
     function submitToMarketoSafely(formData) {
         if (!mktoFormEl) {
             console.warn("Marketo form not loaded; skipping Marketo submission.");
@@ -332,11 +332,11 @@
         setFormSubmitting(true);
 
         // ========================================================
-        // PRIMARY: Pipedream (Salesforce). This is the source of truth.
-        // FIX #2: Marketo is fired AFTER Pipedream success but is
+        // PRIMARY: n8n (Salesforce). This is the source of truth.
+        // FIX #2: Marketo is fired AFTER n8n success but is
         //         fire-and-forget — its errors cannot fail this chain.
         // ========================================================
-        fetchWithRetry('https://eomm9l0t6di5coc.m.pipedream.net', {
+        fetchWithRetry('https://glnavigation.app.n8n.cloud/webhook/recruit-midcareer-casual', {
             method: 'POST',
             body: formData
         })
@@ -457,7 +457,7 @@ ${formData.get('email')}
                 formSubmission: formPayload
             };
 
-            fetch("https://eoimhkgidqcxp6a.m.pipedream.net", {
+            fetch("https://glnavigation.app.n8n.cloud/webhook/recruit-form-error-report", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(debugData),

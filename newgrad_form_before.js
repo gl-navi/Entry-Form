@@ -334,7 +334,7 @@
             const formData = new FormData(form);
             setFormSubmitting(true);
 
-            fetchWithTimeout('https://eoblqo00j4o8lwv.m.pipedream.net', {
+            fetchWithTimeout('https://glnavigation.app.n8n.cloud/webhook/recruit-newgrad-before', {
                 method: 'POST',
                 body: formData
             })
@@ -476,7 +476,7 @@ ${formData.get('graduationYear')}
                         formSubmission: formPayload
                     };
 
-                    fetch("https://eoimhkgidqcxp6a.m.pipedream.net", {
+                    fetch("https://glnavigation.app.n8n.cloud/webhook/recruit-form-error-report", {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(debugData),
