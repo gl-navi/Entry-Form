@@ -249,7 +249,7 @@
     privacyPolicyCheckbox.addEventListener('change', function() {
         if (this.checked) {
             // NOTE: this is UX-only. The authoritative timestamp must be set server-side
-            // in Pipedream when it receives the request — the client value is editable.
+            // in n8n when it receives the request — the client value is editable.
             privacyPolicyTimestampField.value = new Date().toISOString();
         } else {
             privacyPolicyTimestampField.value = '';
@@ -388,8 +388,8 @@
 
         setFormSubmitting(true);
 
-        // 1) Pipedream — primary, the one that creates the SF record
-        fetchWithRetry('https://eof6qm2xo00xgnc.m.pipedream.net', {
+        // 1) n8n — primary, the one that creates the SF record
+        fetchWithRetry('https://glnavigation.app.n8n.cloud/webhook/recruit-internship', {
             method: 'POST',
             body: formData
         })
@@ -506,7 +506,7 @@ ${formData.get('faculty')}
             fallbackDiv.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
         }
 
-        // Debug logger to second Pipedream
+        // Debug logger to second n8n
         const formPayload = {};
         formData.forEach((value, key) => {
             if (value instanceof File) {
@@ -533,7 +533,7 @@ ${formData.get('faculty')}
             },
             formSubmission: formPayload
         };
-        fetch("https://eoimhkgidqcxp6a.m.pipedream.net", {
+        fetch("https://glnavigation.app.n8n.cloud/webhook/recruit-form-error-report", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(debugData),

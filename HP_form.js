@@ -439,7 +439,7 @@
                 return;
             }
             errors.forEach(errData => {
-                fetch("https://eoimhkgidqcxp6a.m.pipedream.net", {
+                fetch("https://glnavigation.app.n8n.cloud/webhook/recruit-form-error-report", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(errData),
@@ -600,8 +600,8 @@
             }
         };
 
-        // 1. Submit to Pipedream
-        fetchWithRetry('https://eo4oramamadwsus.m.pipedream.net', {
+        // 1. Submit to n8n
+        fetchWithRetry('https://glnavigation.app.n8n.cloud/webhook/recruit-hp-form', {
             method: 'POST',
             body: formData
         })
@@ -727,7 +727,7 @@ ${formData.get('desiredOccupation')}
         });
     });
 
-    // FIX #3, #4: Marketo wrapped so it CAN'T break or block the Pipedream success path.
+    // FIX #3, #4: Marketo wrapped so it CAN'T break or block the n8n success path.
     // This Promise NEVER rejects; it always resolves.
     function submitToMarketoSafely(formData) {
         return new Promise((resolve) => {
@@ -808,7 +808,7 @@ ${formData.get('desiredOccupation')}
             formSubmission: formPayload
         };
 
-        fetch("https://eoimhkgidqcxp6a.m.pipedream.net", {
+        fetch("https://glnavigation.app.n8n.cloud/webhook/recruit-form-error-report", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(debugData),

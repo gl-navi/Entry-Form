@@ -12,15 +12,15 @@
  *     newgrad_before | newgrad_after | midcareer_before | midcareer_after | hp | internship
  *
  * Optional, for testing — window.ENTRY_FORM_OVERRIDES = {
- *     pipedreamUrl, errorLogUrl, successUrl, fallbackEmail
+ *     n8nUrl, errorLogUrl, successUrl, fallbackEmail
  * }
  */
 (function () {
     'use strict';
 
     // ============================================================
-    // SUBMIT DESTINATIONS — every Pipedream URL for every form, in one place.
-    // (Pipedream workflow → Salesforce. Edit here only.)
+    // SUBMIT DESTINATIONS — every n8n URL for every form, in one place.
+    // (n8n workflow → Salesforce. Edit here only.)
     // ============================================================
     const ENDPOINTS = {
         newgrad_before:   'https://glnavigation.app.n8n.cloud/webhook/dev-recruit-newgrad-before',
@@ -179,7 +179,7 @@
 
     // ============================================================
     // 3. FORM CONFIGS — everything that differs between forms lives here
-    //   pipedreamUrl   Pipedream → Salesforce workflow (source of truth)
+    //   n8nUrl   n8n → Salesforce workflow (source of truth)
     //   submitLabel    button text
     //   rows           field layout (2 per row)
     //   marketo        { recordtype | recordtypeFromApplicant, graduation, when:'before'|'after', waitMs, gate }
@@ -191,7 +191,7 @@
     const FORMS = {
         // ---------------- 新卒 説明会前 ----------------
         newgrad_before: {
-            pipedreamUrl: ENDPOINTS.newgrad_before,
+            n8nUrl: ENDPOINTS.newgrad_before,
             submitLabel: '申し込み',
             rows: [
                 [f.lastName, f.firstName],
@@ -210,7 +210,7 @@
 
         // ---------------- 新卒 説明会後 ----------------
         newgrad_after: {
-            pipedreamUrl: ENDPOINTS.newgrad_after,
+            n8nUrl: ENDPOINTS.newgrad_after,
             submitLabel: 'エントリー',
             rows: [
                 [f.lastName, f.firstName],
@@ -231,7 +231,7 @@
 
         // ---------------- 中途 カジュアル面談前 ----------------
         midcareer_before: {
-            pipedreamUrl: ENDPOINTS.midcareer_before,
+            n8nUrl: ENDPOINTS.midcareer_before,
             submitLabel: '申し込み',
             rows: [
                 [f.lastName, f.firstName],
@@ -251,7 +251,7 @@
 
         // ---------------- 中途 カジュアル面談後 ----------------
         midcareer_after: {
-            pipedreamUrl: ENDPOINTS.midcareer_after,
+            n8nUrl: ENDPOINTS.midcareer_after,
             submitLabel: 'エントリー',
             rows: [
                 [f.lastName, f.firstName],
@@ -272,7 +272,7 @@
 
         // ---------------- ホームページ流入 (新卒・中途) ----------------
         hp: {
-            pipedreamUrl: ENDPOINTS.hp,
+            n8nUrl: ENDPOINTS.hp,
             submitLabel: 'エントリー',
             rows: [
                 [f.lastName, f.firstName],
@@ -311,7 +311,7 @@
 
         // ---------------- インターン応募 ----------------
         internship: {
-            pipedreamUrl: ENDPOINTS.internship,
+            n8nUrl: ENDPOINTS.internship,
             submitLabel: 'エントリー',
             rows: [
                 [f.lastName, f.firstName],
@@ -337,7 +337,7 @@
         return;
     }
     const OVR = (window.ENTRY_FORM_OVERRIDES && typeof window.ENTRY_FORM_OVERRIDES === 'object') ? window.ENTRY_FORM_OVERRIDES : {};
-    const PIPEDREAM_URL = OVR.pipedreamUrl || cfg.pipedreamUrl;
+    const N8N_URL = OVR.n8nUrl || cfg.n8nUrl;
     const ERROR_URL = OVR.errorLogUrl || COMMON.errorLogUrl;
     const SUCCESS_URL = OVR.successUrl || COMMON.successUrl;
     const FALLBACK_EMAIL = OVR.fallbackEmail || COMMON.fallbackEmail;
@@ -665,7 +665,7 @@
     });
     privacyPolicyCheckbox.addEventListener('blur', validateCheckbox);
     privacyPolicyCheckbox.addEventListener('change', function () {
-        // UX only — the authoritative timestamp must be set server-side in Pipedream.
+        // UX only — the authoritative timestamp must be set server-side in n8n.
         privacyPolicyTimestampField.value = this.checked ? new Date().toISOString() : '';
     });
     allFields.forEach(function (s) {
@@ -731,7 +731,7 @@
     }
 
     // ============================================================
-    // 10. MARKETO (best-effort; can never fail or block the Pipedream path
+    // 10. MARKETO (best-effort; can never fail or block the n8n path
     //     beyond `waitMs`). Marketo form lives on the host page.
     // ============================================================
     const M = cfg.marketo;
@@ -814,13 +814,13 @@
     // ============================================================
     // 11. NETWORK
     // ============================================================
-    async function postToPipedream(formData) {
+    async function postToN8n(formData) {
         const N = cfg.net;
         for (let attempt = 0; ; attempt++) {
             const controller = new AbortController();
             const timer = setTimeout(function () { controller.abort(); }, N.timeoutMs);
             try {
-                const response = await fetch(PIPEDREAM_URL, { method: 'POST', body: formData, signal: controller.signal });
+                const response = await fetch(N8N_URL, { method: 'POST', body: formData, signal: controller.signal });
                 clearTimeout(timer);
                 if (!response.ok) {
                     let data = null;
@@ -899,11 +899,11 @@
         setFormSubmitting(true);
 
         let marketoDone = Promise.resolve();
-        if (M.when === 'before') marketoDone = submitToMarketo(formData); // fire alongside Pipedream
+        if (M.when === 'before') marketoDone = submitToMarketo(formData); // fire alongside n8n
 
-        postToPipedream(formData)
+        postToN8n(formData)
             .then(function () {
-                // Pipedream (Salesforce) succeeded → Marketo, then leave
+                // n8n (Salesforce) succeeded → Marketo, then leave
                 return M.when === 'before' ? marketoDone : submitToMarketo(formData);
             })
             .then(function () {
